@@ -18,12 +18,13 @@ print(count)
 
 ### PART 2 ###
 def is_safe(nums):
-    if not strict_is_safe(nums):
-        for i in range(0, len(nums)):
-            if strict_is_safe(nums[:i] + nums[i + 1 :]):
-                return True
-        return False
-    return True
+    if strict_is_safe(nums):
+        return True
+
+    for i in range(0, len(nums)):
+        if strict_is_safe(nums[:i] + nums[i + 1 :]):
+            return True
+    return False
 
 
 count = 0
