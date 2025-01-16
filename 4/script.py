@@ -1,59 +1,43 @@
+### PART 1 ###
+
 with open("input.txt", "r") as file:
     lines = file.readlines()
 
 
+# Function to check a specific direction with explicit bounds
+def check_direction(row, col, row_step, col_step):
+    for i in range(4):
+        new_row = row + i * row_step
+        new_col = col + i * col_step
+        # Ensure the new position is within bounds
+        if (
+            new_row < 0
+            or new_row >= len(lines)
+            or new_col < 0
+            or new_col >= len(lines[0]) - 1
+        ):
+            return False
+        if lines[new_row][new_col] != "XMAS"[i]:
+            return False
+    return True
+
+
 def is_root(row, col):
-    res = 0
+    directions = [
+        (-1, 0),  # Up
+        (1, 0),  # Down
+        (0, -1),  # Left
+        (0, 1),  # Right
+        (-1, -1),  # Top-left to bottom-right (diagonal down)
+        (1, 1),  # Bottom-left to top-right (diagonal up)
+        (-1, 1),  # Top-right to bottom-left (diagonal down-back)
+        (1, -1),  # Bottom-right to top-left (diagonal up-back)
+    ]
 
-    # check up
-    if row > 3 and ("".join(lines[x][col] for x in range(row, row - 4, -1))) == "XMAS":
-        res += 1
-
-    # check down
-    if row < 137 and ("".join(lines[x][col] for x in range(row, row + 4, 1))) == "XMAS":
-        res += 1
-
-    # check left
-    if col > 3 and ("".join(lines[row][x] for x in range(col, col - 4, -1))) == "XMAS":
-        res += 1
-
-    # check right
-    if col < 137 and ("".join(lines[row][x] for x in range(col, col + 4, 1))) == "XMAS":
-        res += 1
-
-    # check top-left to bottom-right (diagonal down)
-    if (
-        row <= len(lines) - 4
-        and col <= len(lines[0]) - 5
-        and ("".join(lines[row + i][col + i] for i in range(4))) == "XMAS"
-    ):
-        res += 1
-
-    # check bottom-left to top-right (diagonal up)
-    if (
-        row >= 3
-        and col <= len(lines[0]) - 5
-        and ("".join(lines[row - i][col + i] for i in range(4))) == "XMAS"
-    ):
-        res += 1
-
-    # check top-right to bottom-left (diagonal down-back)
-    if (
-        row <= len(lines) - 4
-        and col >= 3
-        and ("".join(lines[row + i][col - i] for i in range(4))) == "XMAS"
-    ):
-        res += 1
-
-    # check bottom-right to top-left (diagonal up-back)
-    if (
-        row >= 3
-        and col >= 3
-        and ("".join(lines[row - i][col - i] for i in range(4))) == "XMAS"
-    ):
-        res += 1
-
-    return res
+    return sum(
+        check_direction(row, col, row_step, col_step)
+        for row_step, col_step in directions
+    )
 
 
 res = 0
@@ -63,3 +47,5 @@ for row in range(len(lines)):
             res += is_root(row, col)
 
 print(res)
+
+### PART 2 ###
