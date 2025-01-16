@@ -49,3 +49,25 @@ for row in range(len(lines)):
 print(res)
 
 ### PART 2 ###
+
+
+def is_middle(row, col):
+    if 0 < row < len(lines) - 1 and 0 < col < len(lines[0]) - 1:
+        diagonals = (
+            lines[row - 1][col - 1]
+            + lines[row - 1][col + 1]
+            + lines[row + 1][col - 1]
+            + lines[row + 1][col + 1]
+        )
+        return diagonals in {"MMSS", "MSMS", "SSMM", "SMSM"}
+    return False
+
+
+res = sum(
+    is_middle(row, col)
+    for row in range(len(lines))
+    for col in range(len(lines[0]) - 1)
+    if lines[row][col] == "A"
+)
+
+print(res)
