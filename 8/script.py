@@ -26,12 +26,42 @@ def generate_antinodes(coord1, coord2):
     ]
 
 
-antinode_coordinates = set()
-for antenna, coordinates in antennas.items():
-    for i in range(len(coordinates)):
-        for j in range(i+1, len(coordinates)):
-            antinode_coordinates.update(
-                generate_antinodes(coordinates[i], coordinates[j])
-            )
+antinode_coordinates = {
+    antinode
+    for coordinates in antennas.values()
+    for i, coord1 in enumerate(coordinates)
+    for coord2 in coordinates[i+1:]
+    for antinode in generate_antinodes(coord1, coord2)
+}
 
 print(len(antinode_coordinates))
+
+### PART 2 ###
+
+
+def new_generate_antinodes(coord1, coord2):
+    dy, dx = coord1[1] - coord2[1], coord1[0] - coord2[0]
+    res = [coord1, coord2]
+
+    curr = (coord1[0]+dx, coord1[1]+dy)
+    while is_valid_coordinate(curr[0], curr[1]):
+        res.append(curr)
+        curr = (curr[0]+dx, curr[1]+dy)
+
+    curr = (coord2[0]-dx, coord2[1]-dy)
+    while is_valid_coordinate(curr[0], curr[1]):
+        res.append(curr)
+        curr = (curr[0]-dx, curr[1]-dy)
+
+    return res
+
+
+new_antinode_coordinates = {
+    antinode
+    for coordinates in antennas.values()
+    for i, coord1 in enumerate(coordinates)
+    for coord2 in coordinates[i+1:]
+    for antinode in new_generate_antinodes(coord1, coord2)
+}
+
+print(len(new_antinode_coordinates))
