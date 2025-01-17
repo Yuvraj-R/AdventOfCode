@@ -1,4 +1,3 @@
-### PART 1 ###
 from collections import defaultdict
 
 with open("input.txt", "r") as file:
@@ -18,21 +17,21 @@ def is_valid_coordinate(y, x):
 
 
 def generate_antinodes(coord1, coord2):
-    dy, dx = coord2[0] - coord1[0], coord2[1] - coord1[1]
+    dy, dx = coord1[1] - coord2[1], coord1[0] - coord2[0]
     return [
         (y, x) for y, x in [
-            (coord1[0] - dx, coord1[1] + dy),
-            (coord2[0] + dx, coord2[1] - dy)
+            (coord1[0]+dx, coord1[1]+dy),
+            (coord2[0]-dx, coord2[1]-dy)
         ] if is_valid_coordinate(y, x)
     ]
 
 
-antinode_coordinates = {
-    antinode
-    for coordinates in antennas.values()
-    for i, coord1 in enumerate(coordinates)
-    for coord2 in coordinates[i+1:]
-    for antinode in generate_antinodes(coord1, coord2)
-}
+antinode_coordinates = set()
+for antenna, coordinates in antennas.items():
+    for i in range(len(coordinates)):
+        for j in range(i+1, len(coordinates)):
+            antinode_coordinates.update(
+                generate_antinodes(coordinates[i], coordinates[j])
+            )
 
 print(len(antinode_coordinates))
