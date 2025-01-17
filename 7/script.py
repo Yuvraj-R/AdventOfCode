@@ -7,41 +7,33 @@ with open("input.txt", "r") as file:
     ]
 
 
-def equation_value(target, curr, rest):
+def equation_value_part1(target, curr, rest):
     if not rest:
         return target if curr == target else 0
-    else:
-        if equation_value(target, curr + rest[0], rest[1:]) != 0:
-            return target
-        elif equation_value(target, curr * rest[0], rest[1:]) != 0:
-            return target
-        return 0
+    return (
+        equation_value_part1(target, curr + rest[0], rest[1:])
+        or equation_value_part1(target, curr * rest[0], rest[1:])
+    )
 
 
-calibration_sum = sum(
-    equation_value(target, nums[0], nums[1:]) for [target, nums] in data
+calibration_sum_part1 = sum(
+    equation_value_part1(target, nums[0], nums[1:]) for target, nums in data
 )
+print(calibration_sum_part1)
 
-print(calibration_sum)
 
 ### PART 2 ###
-
-
-def equation_value(target, curr, rest):
+def equation_value_part2(target, curr, rest):
     if not rest:
         return target if curr == target else 0
-    else:
-        if equation_value(target, curr + rest[0], rest[1:]) != 0:
-            return target
-        elif equation_value(target, curr * rest[0], rest[1:]) != 0:
-            return target
-        elif equation_value(target, int(str(curr) + str(rest[0])), rest[1:]) != 0:
-            return target
-        return 0
+    return (
+        equation_value_part2(target, curr + rest[0], rest[1:])
+        or equation_value_part2(target, curr * rest[0], rest[1:])
+        or equation_value_part2(target, int(str(curr) + str(rest[0])), rest[1:])
+    )
 
 
-calibration_sum = sum(
-    equation_value(target, nums[0], nums[1:]) for [target, nums] in data
+calibration_sum_part2 = sum(
+    equation_value_part2(target, nums[0], nums[1:]) for target, nums in data
 )
-
-print(calibration_sum)
+print(calibration_sum_part2)
