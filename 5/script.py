@@ -1,6 +1,6 @@
-### PART 1 ###
 from collections import defaultdict
 
+# Read and parse the input
 with open("input.txt", "r") as file:
     lines = file.read().strip().split("\n")
 
@@ -9,42 +9,48 @@ split_index = lines.index("")
 rules = [list(map(int, line.split("|"))) for line in lines[:split_index]]
 updates = [list(map(int, line.split(","))) for line in lines[split_index + 1 :]]
 
-# process rules into dictionary
+# Process rules into a dictionary
 rules_map = defaultdict(set)
 for key, value in rules:
     rules_map[key].add(value)
 
 
-# validate each update and keep track of running sum and invalid updates
-invalid_updates = []  # for part 2
+# Validate updates
+def validate_updates(updates):
+    invalid_updates = []
+    total_sum = 0
+
+    for update in updates:
+        seen = set()
+        valid = True
+        for page in update:
+            if any(successor in seen for successor in rules_map[page]):
+                invalid_updates.append(update)
+                valid = False
+                break
+            seen.add(page)
+        if valid:
+            total_sum += update[len(update) // 2]
+
+    return total_sum, invalid_updates
 
 
-def validate_update(update):
-    seen = set()
-    for page in update:
-        if any(successor in seen for successor in rules_map[page]):
-            invalid_updates.append(set(update))
-            return 0
-        seen.add(page)
-
-    return update[len(update) // 2]
-
-
-total_sum = sum(validate_update(update) for update in updates)
-print(total_sum)
-
-
-### PART 2 ###
+# Correct invalid updates
 def correct_update(update):
-    result = []
+    # Create (page, count) pairs
+    result = [
+        (page, sum(1 for successor in rules_map[page] if successor in update))
+        for page in update
+    ]
 
-    for page in update:
-        count = sum(1 if successor in update else 0 for successor in rules_map[page])
-        result.append((page, count))
-
+    # Sort by count and return the middle page
     result.sort(key=lambda x: x[1])
     return result[len(result) // 2][0]
 
+
+# Calculate totals
+total_sum, invalid_updates = validate_updates(updates)
+print(total_sum)
 
 total_corrected_sum = sum(correct_update(update) for update in invalid_updates)
 print(total_corrected_sum)
