@@ -2,35 +2,29 @@
 from collections import defaultdict
 
 with open("input.txt", "r") as file:
-    lines = file.readlines()
-    for i in range(len(lines)):
-        if not lines[i].strip():
-            j = i
-            break
+    lines = file.read().strip().split("\n")
 
-    rules = [list(map(int, x.strip().split("|"))) for x in lines[0:j]]
-    updates = [list(map(int, x.strip().split(","))) for x in lines[j + 1 :]]
+# Split lines into rules and updates based on the first empty line
+split_index = lines.index("")
+rules = [list(map(int, line.split("|"))) for line in lines[:split_index]]
+updates = [list(map(int, line.split(","))) for line in lines[split_index + 1 :]]
 
 # process rules into dictionary
 rules_map = defaultdict(set)
-for rule in rules:
-    rules_map[rule[0]].add(rule[1])
+for key, value in rules:
+    rules_map[key].add(value)
 
 
 # validate each update and keep a running sum
 def validate_update(update):
     seen = set()
     for page in update:
-        for successor in rules_map[page]:
-            if successor in seen:
-                return 0
-
+        if any(successor in seen for successor in rules_map[page]):
+            return 0
         seen.add(page)
 
     return update[len(update) // 2]
 
 
-total_sum = 0
-for update in updates:
-    total_sum += validate_update(update)
+total_sum = sum(validate_update(update) for update in updates)
 print(total_sum)
