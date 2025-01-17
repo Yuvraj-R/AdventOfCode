@@ -23,3 +23,25 @@ calibration_sum = sum(
 )
 
 print(calibration_sum)
+
+### PART 2 ###
+
+
+def equation_value(target, curr, rest):
+    if not rest:
+        return target if curr == target else 0
+    else:
+        if equation_value(target, curr + rest[0], rest[1:]) != 0:
+            return target
+        elif equation_value(target, curr * rest[0], rest[1:]) != 0:
+            return target
+        elif equation_value(target, int(str(curr) + str(rest[0])), rest[1:]) != 0:
+            return target
+        return 0
+
+
+calibration_sum = sum(
+    equation_value(target, nums[0], nums[1:]) for [target, nums] in data
+)
+
+print(calibration_sum)
