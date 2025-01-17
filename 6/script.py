@@ -10,7 +10,7 @@ pos = next(
 offset = (-1, 0)  # Store the direction of the guard as an offset
 mappings = {(-1, 0): (0, 1), (0, 1): (1, 0), (1, 0): (0, -1), (0, -1): (-1, 0)}
 
-while (0 <= pos[0] < len(matrix) - 1) and (0 <= pos[1] < len(matrix[0]) - 1):
+while 0 <= pos[0] + offset[0] < len(matrix) and 0 <= pos[1] + offset[1] < len(matrix[0]):
     # base case: move forwards with no obstructions
     if matrix[pos[0] + offset[0]][pos[1] + offset[1]] != "#":
         matrix[pos[0]][pos[1]] = "X"
