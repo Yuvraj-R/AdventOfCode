@@ -48,6 +48,6 @@ def rating_dfs(y, x, ):
     return sum(rating_dfs(c[0], c[1]) for c in nearby if in_bounds(c[0], c[1]) and topography[c[0]][c[1]] == cur+1)
 
 
-total_score = sum(rating_dfs(y, x)
-                  for y, y_val in enumerate(topography) for x, x_val in enumerate(y_val) if x_val == 0)
-print(total_score)
+total_rating = sum(rating_dfs(y, x)
+                   for y, y_val in enumerate(topography) for x, x_val in enumerate(y_val) if x_val == 0)
+print(total_rating)
