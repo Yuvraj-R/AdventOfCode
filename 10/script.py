@@ -16,10 +16,7 @@ def dfs(y, x, found):
 
     cur = topography[y][x]
 
-    print("VALUE: ", cur, "COORDS: ", y+1, x+1)
-
     if cur == 9 and (y, x) not in found:
-        print("9 FOUND: ", y, x)
         found.add((y, x))
         return 1
 
@@ -34,3 +31,23 @@ total_score = sum(dfs(y, x, set())
 print(total_score)
 
 ### PART 2 ###
+
+
+def rating_dfs(y, x, ):
+    if not (0 <= y < num_rows and 0 <= x < num_cols):
+        return 0
+
+    cur = topography[y][x]
+
+    if cur == 9 and (y, x):
+        return 1
+
+    # Up Down Left Right coordinates
+    nearby = [(y-1, x), (y+1, x), (y, x-1), (y, x+1)]
+
+    return sum(rating_dfs(c[0], c[1]) for c in nearby if in_bounds(c[0], c[1]) and topography[c[0]][c[1]] == cur+1)
+
+
+total_score = sum(rating_dfs(y, x)
+                  for y, y_val in enumerate(topography) for x, x_val in enumerate(y_val) if x_val == 0)
+print(total_score)
