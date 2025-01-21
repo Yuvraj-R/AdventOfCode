@@ -50,6 +50,15 @@ for x_range, y_range in quadrant_ranges:
 print(product)
 
 ### PART 2 ###
+robots = []
+
+with open("input.txt", "r") as file:
+    for line in file:
+        line = line.strip()
+
+        m = re.search(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)", line)
+        x, y, vx, vy = m.group(1), m.group(2), m.group(3), m.group(4)
+        robots.append(((int(x), int(y)), (int(vx), int(vy))))
 
 
 def print_robots(file):
@@ -60,7 +69,16 @@ def print_robots(file):
 
 
 def check():
-    return all([robot_positions[(49, 51)] > 0, robot_positions[(50, 51)] > 0, robot_positions[(51, 51)] > 0])
+    for y in range(AREA_HEIGHT):
+        consecutive = 0
+        for x in range(AREA_WIDTH):
+            if robot_positions[(x, y)] > 0:
+                consecutive += 1
+                if consecutive >= 10:
+                    return True
+            else:
+                consecutive = 0
+    return False
 
 
 robot_positions = defaultdict(int)
