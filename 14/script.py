@@ -48,3 +48,33 @@ for x_range, y_range in quadrant_ranges:
         product *= count
 
 print(product)
+
+### PART 2 ###
+
+
+def print_robots(file):
+    for y in range(AREA_HEIGHT):
+        line = ''.join(str(robot_positions[(x, y)]) if robot_positions[(
+            x, y)] > 0 else '.' for x in range(AREA_WIDTH))
+        file.write(line + '\n')
+
+
+def check():
+    return all([robot_positions[(49, 51)] > 0, robot_positions[(50, 51)] > 0, robot_positions[(51, 51)] > 0])
+
+
+robot_positions = defaultdict(int)
+for robot in robots:
+    robot_positions[robot[0]] += 1
+
+with open("output.txt", "w") as out_file:
+    for j in range(10403):
+        if check():
+            out_file.write(f"---------- {j} ----------\n")
+            print_robots(out_file)
+        for i, robot in enumerate(robots):
+            old_position = robot[0]
+            new_position = process(robot)
+            robots[i] = (new_position, robot[1])
+            robot_positions[old_position] -= 1
+            robot_positions[new_position] += 1
