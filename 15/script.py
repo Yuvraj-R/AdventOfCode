@@ -52,13 +52,23 @@ def process_move(pos_y, pos_x, move):
             move_element = grid[move_y][move_x]
 
         if grid[move_y][move_x] == ".":
-            print("valid shift")
-        else:
-            print("invalid shift")
+            while move_y-offsets[move][0] != pos_y or move_x-offsets[move][1] != pos_x:
+                grid[move_y][move_x] = "O"
+                move_y -= offsets[move][0]
+                move_x -= offsets[move][1]
+            grid[move_y][move_x] = "@"
+            grid[pos_y][pos_x] = "."
+            pos_y, pos_x = move_y, move_x
+
         return (pos_y, pos_x)
 
 
-print(robot_pos)
 for move in moves:
     robot_pos = process_move(robot_pos[0], robot_pos[1], move)
-    print(move, robot_pos)
+
+total = 0
+for y in range(GRID_WIDTH):
+    for x in range(GRID_HEIGHT):
+        if grid[y][x] == "O":
+            total += (100 * y + x)
+print(total)
