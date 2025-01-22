@@ -1,33 +1,25 @@
 with open("input.txt", "r") as file:
     lines = [line.strip() for line in file]
 
-    grid = []
-    moves = []
-
-    i = 0
-    while lines[i] != "":
-        grid.append(list(lines[i]))
-        i += 1
-
+grid, moves = [], []
+i = 0
+while lines[i] != "":
+    grid.append(list(lines[i]))
     i += 1
-    while i < len(lines):
-        moves.extend(lines[i])
-        i += 1
+
+i += 1  # Skip the blank line
+moves = "".join(lines[i:])
 
 # Grid dimensions
-GRID_HEIGHT = len(grid)
-GRID_WIDTH = len(grid[0])
+GRID_HEIGHT, GRID_WIDTH = len(grid), len(grid[0])
 
 # inital robot position
-robot_pos = [(y, x) for y in range(GRID_HEIGHT)
-             for x in range(GRID_WIDTH) if grid[y][x] == "@"][0]
+robot_pos = next(
+    (y, x) for y in range(GRID_HEIGHT)
+    for x in range(GRID_WIDTH) if grid[y][x] == "@"
+)
 
-offsets = {
-    "<": (0, -1),
-    ">": (0, 1),
-    "^": (-1, 0),
-    "v": (1, 0)
-}
+DIRECTIONS = {"<": (0, -1), ">": (0, 1), "^": (-1, 0), "v": (1, 0)}
 
 
 def in_bounds(y, x):
@@ -35,40 +27,50 @@ def in_bounds(y, x):
 
 
 def process_move(pos_y, pos_x, move):
-    move_y = pos_y + offsets[move][0]
-    move_x = pos_x + offsets[move][1]
+    dy, dx = DIRECTIONS[move]
+    new_y, new_x = pos_y + dy, pos_x + dx
 
-    move_element = grid[move_y][move_x]
+    # If the move is blocked by a wall, stay in place
+    if grid[new_y][new_x] == "#":
+        return pos_y, pos_x
 
-    if move_element == "#":
-        return (pos_y, pos_x)
-    elif move_element == ".":
+    # If moving to an empty space, update the robot's position
+    if grid[new_y][new_x] == ".":
         grid[pos_y][pos_x] = "."
-        return (move_y, move_x)
-    else:
-        while move_element not in (".", "#"):
-            move_y += offsets[move][0]
-            move_x += offsets[move][1]
-            move_element = grid[move_y][move_x]
+        grid[new_y][new_x] = "@"
+        return new_y, new_x
 
-        if grid[move_y][move_x] == ".":
-            while move_y-offsets[move][0] != pos_y or move_x-offsets[move][1] != pos_x:
-                grid[move_y][move_x] = "O"
-                move_y -= offsets[move][0]
-                move_x -= offsets[move][1]
-            grid[move_y][move_x] = "@"
-            grid[pos_y][pos_x] = "."
-            pos_y, pos_x = move_y, move_x
+    # Handle box pushing
+    while grid[new_y][new_x] not in (".", "#"):
+        new_y += dy
+        new_x += dx
 
-        return (pos_y, pos_x)
+    if grid[new_y][new_x] == ".":
+        # Push boxes
+        while (new_y - dy, new_x - dx) != (pos_y, pos_x):
+            grid[new_y][new_x] = "O"
+            new_y -= dy
+            new_x -= dx
+
+        grid[new_y][new_x] = "@"
+        grid[pos_y][pos_x] = "."
+        return new_y, new_x
+
+    # If blocked, stay in place
+    return pos_y, pos_x
 
 
+# Simulate all moves
 for move in moves:
     robot_pos = process_move(robot_pos[0], robot_pos[1], move)
 
-total = 0
-for y in range(GRID_WIDTH):
-    for x in range(GRID_HEIGHT):
-        if grid[y][x] == "O":
-            total += (100 * y + x)
-print(total)
+# Calculate the total GPS coordinates sum
+total_gps = sum(
+    100 * y + x
+    for y in range(GRID_HEIGHT)
+    for x in range(GRID_WIDTH)
+    if grid[y][x] == "O"
+)
+
+# Print the result
+print(total_gps)
