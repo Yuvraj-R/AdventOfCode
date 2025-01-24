@@ -2,48 +2,51 @@ from collections import deque
 
 
 class Day18:
-
-    def __init__(self, num_falls, GRID_WIDTH, GRID_HEIGHT):
+    def __init__(self, num_falls, grid_width, grid_height):
         self.num_falls = num_falls
-        self.GRID_WIDTH = GRID_WIDTH
-        self.GRID_HEIGHT = GRID_HEIGHT
+        self.grid_width = grid_width
+        self.grid_height = grid_height
 
     def solution(self):
+        # Read and parse coordinates from the input file
         with open("input.txt", "r") as file:
-            coordinates = [list(map(int, line.strip().split(",")))
+            coordinates = [tuple(map(int, line.strip().split(",")))
                            for line in file]
 
-        grid = [["."] * self.GRID_WIDTH for _ in range(self.GRID_HEIGHT)]
-
-        for i in range(self.num_falls):
-            x, y = coordinates[i]
+        # Initialize the grid
+        grid = [["."] * self.grid_width for _ in range(self.grid_height)]
+        for x, y in coordinates[:self.num_falls]:
             grid[y][x] = "#"
 
         def in_bounds(y, x):
-            return 0 <= y < self.GRID_HEIGHT and 0 <= x < self.GRID_WIDTH
+            return 0 <= y < self.grid_height and 0 <= x < self.grid_width
 
-        queue = deque()
-        queue.append((0, 0))
-        distance = 0
+        # Breadth-first search setup
+        queue = deque([(0, 0)])
+        visited = set([(0, 0)])
         offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        visited = set()
+        distance = 0
 
+        # Perform BFS
         while queue:
-            iterations = len(queue)
-            for i in range(iterations):
+            for _ in range(len(queue)):
                 y, x = queue.popleft()
-                if (y, x) in visited or not in_bounds(y, x) or grid[y][x] == "#":
+                if grid[y][x] == "#":
                     continue
-
-                visited.add((y, x))
-
-                if y == self.GRID_HEIGHT - 1 and x == self.GRID_WIDTH - 1:
+                if (y, x) == (self.grid_height - 1, self.grid_width - 1):
                     return distance
-
                 for dy, dx in offsets:
-                    queue.append((y + dy, x + dx))
+                    ny, nx = y + dy, x + dx
+                    if in_bounds(ny, nx) and (ny, nx) not in visited:
+                        visited.add((ny, nx))
+                        queue.append((ny, nx))
             distance += 1
 
+        # If no path is found, return -1
+        return -1
 
-day18 = Day18(1024, 71, 71)
-print(day18.solution())
+
+# Example usage
+if __name__ == "__main__":
+    day18 = Day18(1024, 71, 71)
+    print(day18.solution())
