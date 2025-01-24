@@ -55,6 +55,54 @@ class Day17:
 
         print(",".join(output))
 
+    def solution2(self):
+        import re
+        with open("input.txt") as f:
+            puzzle_input = f.read()
+
+        reg_part, prog_part = puzzle_input.split('\n\n')
+        _, B, C = map(int, re.findall(r'\d+', reg_part))
+        program = [int(x) for x in re.findall(r'\d+', prog_part)]
+        n = len(program)
+
+        def run_program(A):
+            r = {'A': A, 'B': B, 'C': C}
+
+            def combo(op):
+                if op == 4:
+                    return r['A']
+                if op == 5:
+                    return r['B']
+                if op == 6:
+                    return r['C']
+                return op
+            i = 0
+            out = []
+            while i < n:
+                opcode, operand = program[i:i+2]
+                match opcode:
+                    case 0: r['A'] >>= combo(operand)
+                    case 1: r['B'] ^= operand
+                    case 2: r['B'] = combo(operand) % 8
+                    case 3:
+                        if r['A']:
+                            i = operand - 2
+                    case 4: r['B'] ^= r['C']
+                    case 5: out.append(combo(operand) % 8)
+                    case 6: r['B'] = r['A'] >> combo(operand)
+                    case 7: r['C'] = r['A'] >> combo(operand)
+                i += 2
+            return out
+
+        A = 0
+        for i in reversed(range(n)):
+            A <<= 3
+            while run_program(A) != program[i:]:
+                A += 1
+
+        print(A)
+
 
 day17 = Day17()
 day17.solution()
+day17.solution2()
