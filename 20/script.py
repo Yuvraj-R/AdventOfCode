@@ -8,14 +8,13 @@ class Day20:
 
     def solution(self):
         with open("input.txt", "r") as file:
-            grid = [[c for c in line.strip()] for line in file]
+            grid = [list(line.strip()) for line in file]
 
         GRID_WIDTH, GRID_HEIGHT = len(grid[0]), len(grid)
+        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
         def in_bounds(y, x):
             return 0 <= y < GRID_HEIGHT and 0 <= x < GRID_WIDTH
-
-        offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
         path = {}
 
@@ -52,22 +51,12 @@ class Day20:
 
             # Check all possible entry/exit combinations
             # Up, Down, Left, Right
-            directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-            for i, (dy1, dx1) in enumerate(directions):
-                for j, (dy2, dx2) in enumerate(directions):
-                    # Skip checking the same direction twice
-                    if i >= j:
-                        continue
-
-                    # Entry point and exit point
-                    first = (y + dy1, x + dx1)
-                    second = (y + dy2, x + dx2)
-
-                    # Both entry and exit points must be valid path points
-                    if first in path and second in path:
-                        time_saved = abs(path[first] - path[second]) - 2
-                        if time_saved > 0:
-                            cheats[time_saved] += 1
+            for (dy1, dx1), (dy2, dx2) in ((d1, d2) for i, d1 in enumerate(offsets) for d2 in offsets[i + 1:]):
+                first, second = (y + dy1, x + dx1), (y + dy2, x + dx2)
+                if first in path and second in path:
+                    time_saved = abs(path[first] - path[second]) - 2
+                    if time_saved > 0:
+                        cheats[time_saved] += 1
 
         # Iterate over every wall cell and calculate cheats
         for y in range(GRID_HEIGHT):
