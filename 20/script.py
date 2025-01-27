@@ -75,9 +75,8 @@ class Day20:
                 if grid[y][x] == "#":
                     calculate_cheat(y, x)
 
-        count = sum(count for cheat, count in cheats.items() if cheat >= 100)
-        print(count)
+        return sum(count for cheat, count in cheats.items() if cheat >= 100)
 
 
 day20 = Day20()
-day20.solution()
+print(day20.solution())
